@@ -1,0 +1,58 @@
+﻿@model List<CompanyViewModel>
+
+<h2>Companies</h2>
+<div class="row mb-3">
+    <div class="col">
+        <form asp-controller="Company" asp-action="AddCompanies" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="file">Upload Companies File:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="file" name="file" class="form-control" required>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="submit">Upload</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col text-right">
+        <a href="@Url.Action("AddCompany", "Company")" class="btn btn-primary float-right">Add Company</a>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Company Name</th>
+                <th>Number of Contacts</th>
+                <th>Maximum Contact Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var companyViewModel in Model)
+            {
+                <tr>
+                    <td>@companyViewModel.Id</td>
+                    <td>@companyViewModel.CompanyName</td>
+                    <td>@companyViewModel.NumContacts</td>
+                    <td>@companyViewModel.MaxContactAge</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No companies found.</p>
+}

@@ -1,0 +1,91 @@
+﻿@model List<CompanyViewModel>
+
+<h2>Companies</h2>
+<div class="row mb-3">
+    <div class="col">
+        <form asp-controller="Company" asp-action="AddCompanies" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="file">Upload Companies File:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="file" name="file" class="form-control" required>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="submit">Upload</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col text-right">
+        <a href="@Url.Action("AddCompany", "Company")" class="btn btn-primary float-right">Add Company</a>
+        <a href="@Url.Action("AddContact", "Contact")" class="btn btn-primary float-right">Add Contact</a>
+    </div>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Company Name</th>
+            <th>Number of Contacts</th>
+            <th>Maximum Contact Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach (var companyViewModel in Model)
+            {
+                <tr>
+                    <td>@companyViewModel.Id</td>
+                    <td>@companyViewModel.CompanyName</td>
+                    <td>@companyViewModel.NumContacts</td>
+                    <td>@companyViewModel.MaxContactAge</td>
+                </tr>
+                @if (companyViewModel.Contacts != null && companyViewModel.Contacts.Any())
+                {
+                    <tr>
+                        <td colspan="4">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Contact Age</th>
+                                        <th>Contact Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var contactViewModel in companyViewModel.Contacts)
+                                    {
+                                        <tr>
+                                            <td>@contactViewModel.Id</td>
+                                            <td>@contactViewModel.ContactAge</td>
+                                            <td>@contactViewModel.ContactNumber</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4">
+                    No companies found.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
