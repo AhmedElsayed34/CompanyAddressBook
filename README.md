@@ -5,6 +5,7 @@ Company Address Book Web Application
 This is a web application for managing companies and their contacts.
 
 Installation
+
 To install this application, follow these steps:
 
 Clone the repository to your local machine.
