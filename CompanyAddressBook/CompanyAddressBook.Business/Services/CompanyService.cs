@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace CompanyAddressBook.Business.Services
 {
-        /// <inheritdoc />
+    /// <inheritdoc />
     public class CompanyService : ICompanyService
     {
         private readonly IBaseRepository<Company> _repository;
@@ -34,7 +34,7 @@ namespace CompanyAddressBook.Business.Services
         /// <inheritdoc />
         public Company GetById(int id)
         {
-            return _repository.GetById(id,includes: c => c.Contacts);
+            return _repository.GetById(id, includes: c => c.Contacts);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,12 @@ namespace CompanyAddressBook.Business.Services
             return _repository.AddRange(companies, "CompanyName");
         }
 
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Parses the data from the file and returns a list of companies.
+        /// </summary>
+        /// <param name="file">The file to parse.</param>
+        /// <returns>A list of companies.</returns>
         private List<Company> GetCompaniesListFromFile(IFormFile file)
         {
             var companies = new List<Company>();
@@ -77,23 +82,25 @@ namespace CompanyAddressBook.Business.Services
                                 company = new Company();
                                 company.CompanyName = fields[i];
 
-                                if (!ValidateCompanyName(company.CompanyName))
-                                    continue;
-
                                 int.TryParse(fields[++i], out numContacts);
                                 company.NumContacts = numContacts;
+
                                 var match = Regex.Match(fields[++i], @"^\d+");
                                 if (match.Success)
+                                {
                                     int.TryParse(match.Value, out maxContactAge);
+                                    i--;
+                                }
                                 else
-                                    int.TryParse(fields[i--], out maxContactAge);
+                                    int.TryParse(fields[i], out maxContactAge);
 
                                 company.MaxContactAge = maxContactAge;
 
-                                if (!companies.Any(s => s.CompanyName.Trim().ToLower() == company.CompanyName.Trim().ToLower()))
+                                if (ValidateCompanyName(company.CompanyName) && !companies.Any(s => s.CompanyName.Trim().ToLower() == company.CompanyName.Trim().ToLower()))
                                     companies.Add(company);
                             }
-                            catch  (Exception ex) { 
+                            catch (Exception ex)
+                            {
                                 _logger.LogError(ex.ToString());
                             }
 
@@ -109,7 +116,12 @@ namespace CompanyAddressBook.Business.Services
             return companies;
         }
 
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Validate Company Name as Company Name should have special characters (§,®,™,©,ʬ,@) preceded by a digit at names
+        /// </summary>
+        /// <param name="companyName"></param>
+        /// <returns>validate flage</returns>
         private bool ValidateCompanyName(string companyName)
         {
             var regex = new Regex(@"\d[§®™©ʬ@]");
